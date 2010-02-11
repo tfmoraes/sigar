@@ -1968,6 +1968,62 @@ int sigar_net_interface_list_get(sigar_t *sigar,
 
 #endif /* WIN32 */
 
+#if defined(HAVE_IFADDRS_H)
+
+#include <ifaddrs.h>
+
+SIGAR_DECLARE(int)
+sigar_net_interface_address_list_get(sigar_t *sigar,
+                                     sigar_net_interface_address_list_t *ifaddrs)
+{
+    struct ifaddrs *ifap, *ifa;
+
+    if (getifaddrs(&ifap) == -1) {
+        return errno;
+    }
+
+    sigar_net_interface_address_list_create(ifaddrs);
+
+    for (ifa = ifap; ifa; ifa = ifa->ifa_next) {
+        sigar_net_interface_address_t *ifaddr;
+        struct sockaddr *sa = ifa->ifa_addr;
+        int family;
+
+        if (sa == NULL) {
+            continue;
+        }
+        family = sa->sa_family;
+        if (!((family == AF_INET) || (family == AF_INET6))) {
+            continue;
+        }
+        SIGAR_NET_IFADDRS_GROW(ifaddrs);
+        ifaddr = &ifaddrs->data[ifaddrs->number++];
+
+        if (family == AF_INET) {
+            sigar_net_address_set(ifaddr->address, SIGAR_SIN_S_ADDR(sa));
+            sigar_net_address_set(ifaddr->netmask, SIGAR_SIN_S_ADDR(ifa->ifa_netmask));
+            if (ifa->ifa_broadaddr) {
+                sigar_net_address_set(ifaddr->broadcast,
+                                      SIGAR_SIN_S_ADDR(ifa->ifa_broadaddr));
+            }
+        }
+        else {
+            sigar_net_address6_set(ifaddr->address, SIGAR_SIN6_ADDR(sa));
+            sigar_net_address6_set(ifaddr->netmask, SIGAR_SIN6_ADDR(ifa->ifa_netmask));
+            if (ifa->ifa_dstaddr) {
+                sigar_net_address6_set(ifaddr->destination,
+                                       SIGAR_SIN6_ADDR(ifa->ifa_dstaddr));
+            }
+        }
+    }
+
+    freeifaddrs(ifap);
+
+    return SIGAR_OK;
+}
+
+#endif /* HAVE_IFADDRS_H */
+
 SIGAR_DECLARE(int)
 sigar_net_interface_config_primary_get(sigar_t *sigar,
                                        sigar_net_interface_config_t *ifconfig)

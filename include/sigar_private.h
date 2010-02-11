@@ -286,6 +286,10 @@ int sigar_net_connection_list_grow(sigar_net_connection_list_t *connlist);
         sigar_net_connection_list_grow(connlist); \
     }
 
+#define SIGAR_SIN(s) ((struct sockaddr_in *)(s))
+
+#define SIGAR_SIN_S_ADDR(s) SIGAR_SIN(s)->sin_addr.s_addr
+
 #define sigar_net_address_set(a, val) \
     (a).addr.in = val; \
     (a).family = SIGAR_AF_INET
