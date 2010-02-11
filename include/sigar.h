@@ -625,6 +625,35 @@ sigar_net_interface_config_get(sigar_t *sigar,
                                const char *name,
                                sigar_net_interface_config_t *ifconfig);
 
+typedef struct {
+    char ifname[16];
+
+    sigar_uint64_t flags;
+
+    sigar_net_address_t address;
+
+    sigar_net_address_t netmask;
+
+    union {
+        sigar_net_address_t broadcast;
+        sigar_net_address_t destination;
+    };
+} sigar_net_interface_address_t;
+
+typedef struct {
+    unsigned long number;
+    unsigned long size;
+    sigar_net_interface_address_t *data;
+} sigar_net_interface_address_list_t;
+
+SIGAR_DECLARE(int)
+sigar_net_interface_address_list_get(sigar_t *sigar,
+                                     sigar_net_interface_address_list_t *ifaddrs);
+
+SIGAR_DECLARE(int)
+sigar_net_interface_address_list_destroy(sigar_t *sigar,
+                                         sigar_net_interface_address_list_t *ifaddrs);
+
 SIGAR_DECLARE(int)
 sigar_net_interface_config_primary_get(sigar_t *sigar,
                                        sigar_net_interface_config_t *ifconfig);
