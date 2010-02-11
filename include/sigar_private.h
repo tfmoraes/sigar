@@ -166,6 +166,8 @@
 
 #define SIGAR_NET_IFLIST_MAX 20
 
+#define SIGAR_NET_IFADDRS_MAX 5
+
 #define SIGAR_NET_CONNLIST_MAX 20
 
 #define SIGAR_ARP_LIST_MAX 12
@@ -265,6 +267,15 @@ int sigar_net_interface_list_grow(sigar_net_interface_list_t *iflist);
     if (iflist->number >= iflist->size) { \
         sigar_net_interface_list_grow(iflist); \
     }
+
+int sigar_net_interface_address_list_create(sigar_net_interface_address_list_t *ifaddrs);
+
+int sigar_net_interface_address_list_grow(sigar_net_interface_address_list_t *ifaddrs);
+
+#define SIGAR_NET_IFADDRS_GROW(ifaddrs) \
+if (ifaddrs->number >= ifaddrs->size) { \
+     sigar_net_interface_address_list_grow(ifaddrs); \
+}
 
 int sigar_net_connection_list_create(sigar_net_connection_list_t *connlist);
 

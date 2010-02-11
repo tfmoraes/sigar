@@ -659,6 +659,38 @@ sigar_net_interface_list_destroy(sigar_t *sigar,
     return SIGAR_OK;
 }
 
+int sigar_net_interface_address_list_create(sigar_net_interface_address_list_t *ifaddrs)
+{
+    ifaddrs->number = 0;
+    ifaddrs->size = SIGAR_NET_IFADDRS_MAX;
+    ifaddrs->data = malloc(sizeof(*(ifaddrs->data)) *
+                            ifaddrs->size);
+    return SIGAR_OK;
+}
+
+int sigar_net_interface_address_list_grow(sigar_net_interface_address_list_t *ifaddrs)
+{
+    ifaddrs->data =
+        realloc(ifaddrs->data,
+                sizeof(*(ifaddrs->data)) *
+                (ifaddrs->size + SIGAR_NET_IFADDRS_MAX));
+    ifaddrs->size += SIGAR_NET_IFADDRS_MAX;
+
+    return SIGAR_OK;
+}
+
+SIGAR_DECLARE(int)
+sigar_net_interface_address_list_destroy(sigar_t *sigar,
+                                         sigar_net_interface_address_list_t *ifaddrs)
+{
+    if (ifaddrs->size) {
+        free(ifaddrs->data);
+        ifaddrs->number = ifaddrs->size = 0;
+    }
+
+    return SIGAR_OK;
+}
+
 int sigar_net_connection_list_create(sigar_net_connection_list_t *connlist)
 {
     connlist->number = 0;
