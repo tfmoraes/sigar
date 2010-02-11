@@ -1968,9 +1968,46 @@ int sigar_net_interface_list_get(sigar_t *sigar,
 
 #endif /* WIN32 */
 
-#if defined(HAVE_IFADDRS_H)
+#if defined(__linux__) || defined(HAVE_IFADDRS_H)
+#  if defined(HAVE_IFADDRS_H)
+#    include <ifaddrs.h>
 
-#include <ifaddrs.h>
+#    define sigar_getifaddrs(sigar, ifap) getifaddrs(ifap)
+
+#    define sigar_freeifaddrs(sigar, ifap) freeifaddrs(ifa)
+
+#  elif defined(__linux__)
+
+#    define __USE_GNU /* for RTLD_NEXT */
+#    include <dlfcn.h>
+#    undef __USE_GNU
+
+static int sigar_getifaddrs(sigar_t *sigar, struct ifaddrs **ifap)
+{
+    if (!sigar->getifaddrs) {
+        sigar->getifaddrs = dlsym(RTLD_NEXT, "getifaddrs");
+    }
+
+    if (!sigar->getifaddrs) {
+        return SIGAR_ENOTIMPL;
+    }
+
+    return (*sigar->getifaddrs)(ifap);
+}
+
+static void sigar_freeifaddrs(sigar_t *sigar, struct ifaddrs *ifa)
+{
+    if (!sigar->freeifaddrs) {
+        sigar->freeifaddrs = dlsym(RTLD_NEXT, "freeifaddrs");
+    }
+
+    if (!sigar->freeifaddrs) {
+        return;
+    }
+
+    (*sigar->freeifaddrs)(ifa);
+}
+#  endif /* __linux__ */
 
 SIGAR_DECLARE(int)
 sigar_net_interface_address_list_get(sigar_t *sigar,
@@ -1978,7 +2015,7 @@ sigar_net_interface_address_list_get(sigar_t *sigar,
 {
     struct ifaddrs *ifap, *ifa;
 
-    if (getifaddrs(&ifap) == -1) {
+    if (sigar_getifaddrs(sigar, &ifap) == -1) {
         return errno;
     }
 
@@ -2017,12 +2054,12 @@ sigar_net_interface_address_list_get(sigar_t *sigar,
         }
     }
 
-    freeifaddrs(ifap);
+    sigar_freeifaddrs(sigar, ifap);
 
     return SIGAR_OK;
 }
 
-#endif /* HAVE_IFADDRS_H */
+#endif /* __linux__ || HAVE_IFADDRS_H */
 
 SIGAR_DECLARE(int)
 sigar_net_interface_config_primary_get(sigar_t *sigar,

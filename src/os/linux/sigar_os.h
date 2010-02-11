@@ -58,6 +58,34 @@ typedef enum {
     IOSTAT_SYS /* 2.6 */
 } linux_iostat_e;
 
+#ifndef HAVE_IFADDRS_H
+/* not supported in linux 2.2 kernel */
+/* we use the dynamic linker for bincompat in the x86-linux binary */
+struct ifaddrs {
+    struct ifaddrs *ifa_next;
+    char *ifa_name;
+    unsigned int ifa_flags;
+    struct sockaddr *ifa_addr;
+    struct sockaddr *ifa_netmask;
+    union {
+        struct sockaddr *ifu_broadaddr;
+        struct sockaddr *ifu_dstaddr;
+    } ifa_ifu;
+# ifndef ifa_broadaddr
+#  define ifa_broadaddr ifa_ifu.ifu_broadaddr
+# endif
+# ifndef ifa_dstaddr
+#  define ifa_dstaddr   ifa_ifu.ifu_dstaddr
+# endif
+    void *ifa_data;
+};
+
+typedef int (*sigar_getifaddrs_t)(struct ifaddrs **);
+
+typedef void (*sigar_freeifaddrs_t)(struct ifaddrs *);
+
+#endif
+
 struct sigar_t {
     SIGAR_T_BASE;
     int pagesize;
@@ -69,6 +97,10 @@ struct sigar_t {
     char *proc_net;
     /* Native POSIX Thread Library 2.6+ kernel */
     int has_nptl;
+#ifndef HAVE_IFADDRS_H
+    sigar_getifaddrs_t getifaddrs;
+    sigar_freeifaddrs_t freeifaddrs;
+#endif
 };
 
 #define HAVE_STRERROR_R
