@@ -36,6 +36,7 @@ USA.
     <mkdir dir="${build}/classes"/>
 
     <available property="libproc.h" file="/usr/include/libproc.h"/>
+    <available property="ifaddrs.h" file="/usr/include/ifaddrs.h"/>
 
     <condition property="jni.debug" value="true">
       <isset property="jni.dmalloc"/>
@@ -333,6 +334,7 @@ USA.
           <define name="${jni.define.name}_LINUX"/>
           <define name="_REENTRANT"/>
           <define name="DMALLOC" if="jni.dmalloc"/>
+          <define name="HAVE_IFADDRS_H" if="ifaddrs.h"/>
         </defineset>
       </compiler>
 

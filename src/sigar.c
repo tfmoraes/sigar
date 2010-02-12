@@ -1968,6 +1968,14 @@ int sigar_net_interface_list_get(sigar_t *sigar,
 
 #endif /* WIN32 */
 
+#ifndef HAVE_IFADDRS_H
+/* easier on the non-autotools builds */
+#  if defined(DARWIN) || defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__NetBSD__)
+#    define HAVE_IFADDRS_H
+#    define sigar_ifflags_get(flags) flags
+#  endif
+#endif
+
 #if defined(__linux__) || defined(HAVE_IFADDRS_H)
 #  if defined(HAVE_IFADDRS_H)
 #    include <ifaddrs.h>
