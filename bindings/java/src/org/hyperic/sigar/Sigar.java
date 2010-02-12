@@ -917,6 +917,12 @@ public class Sigar implements SigarProxy {
     public native String[] getNetInterfaceList() throws SigarException;
 
     /**
+     * Get the list of network interface addresses.
+     * @exception SigarException on failure.
+     */
+    public native NetInterfaceAddress[] getNetInterfaceAddressList() throws SigarException;
+
+    /**
      * Prompt for a password, disabling terminal echo
      * during user input.
      * @param prompt Text printed before disabling echo

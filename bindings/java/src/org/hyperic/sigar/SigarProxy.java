@@ -147,6 +147,8 @@ public interface SigarProxy {
 
     public String[] getNetInterfaceList() throws SigarException;
 
+    public NetInterfaceAddress[] getNetInterfaceAddressList() throws SigarException;
+
     public NetConnection[] getNetConnectionList(int flags)
         throws SigarException;
 
