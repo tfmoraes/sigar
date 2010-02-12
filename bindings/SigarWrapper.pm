@@ -28,7 +28,7 @@ my %has_name_arg = map { $_, 1 } qw(FileSystemUsage DiskUsage
 my %proc_no_arg = map { $_, 1 } qw(stat);
 
 my %get_not_impl = map { $_, 1 } qw(net_address net_route net_connection net_stat cpu_perc
-                                    arp who cpu_info file_system); #list funcs only
+                                    net_interface_address arp who cpu_info file_system); #list funcs only
 
 sub supported_platforms {
     my $p = shift;
@@ -1100,6 +1100,32 @@ use vars qw(%classes %cmds);
          name => 'tx_queue_len', type => 'Int',
          desc => '',
          plat => 'L'
+      },
+    ],
+    NetInterfaceAddress => [
+      {
+         name => 'ifname', type => 'String',
+         desc => 'Name of the network interface',
+      },
+      {
+         name => 'flags', type => 'Long',
+         desc => 'Flags as from SIOCGIFFLAGS ioctl',
+      },
+      {
+         name => 'address', type => 'NetAddress',
+         desc => 'Network address',
+      },
+      {
+         name => 'netmask', type => 'NetAddress',
+         desc => 'Netmask of this interface',
+      },
+      {
+         name => 'broadcast', type => 'NetAddress',
+         desc => 'Broadcast address of this interface if (flags & SIGAR_IFF_BROADCAST)',
+      },
+      {
+         name => 'destination', type => 'NetAddress',
+         desc => 'Point-to-point destination address if (flags & SIGAR_IFF_POINTOPOINT)',
       },
     ],
     NetInterfaceStat => [
@@ -2892,7 +2918,7 @@ EOF
 my(@nongens) =
     qw{net_interface_list net_route_list net_connection_list
        file_system_list cpu_info_list arp_list who_list
-       loadavg};
+       net_interface_address_list loadavg};
 
 sub finish {
     my $self = shift;
