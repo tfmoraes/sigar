@@ -1648,6 +1648,40 @@ static void get_interface_type(sigar_net_interface_config_t *ifconfig,
 
 #endif
 
+static sigar_uint64_t sigar_ifflags_get(sigar_uint64_t flags)
+{
+#ifdef __linux__
+# ifndef IFF_DYNAMIC
+#  define IFF_DYNAMIC 0x8000 /* not in 2.2 kernel */
+# endif /* IFF_DYNAMIC */
+    int is_mcast = flags & IFF_MULTICAST;
+    int is_slave = flags & IFF_SLAVE;
+    int is_master = flags & IFF_MASTER;
+    int is_dynamic = flags & IFF_DYNAMIC;
+    /*
+     * XXX: should just define SIGAR_IFF_*
+     * and test IFF_* bits on given platform.
+     * this is the only diff between solaris/hpux/linux
+     * for the flags we care about.
+     *
+     */
+    flags &= ~(IFF_MULTICAST|IFF_SLAVE|IFF_MASTER);
+    if (is_mcast) {
+        flags |= SIGAR_IFF_MULTICAST;
+    }
+    if (is_slave) {
+        flags |= SIGAR_IFF_SLAVE;
+    }
+    if (is_master) {
+        flags |= SIGAR_IFF_MASTER;
+    }
+    if (is_dynamic) {
+        flags |= SIGAR_IFF_DYNAMIC;
+    }
+#endif
+    return flags;
+}
+
 int sigar_net_interface_config_get(sigar_t *sigar, const char *name,
                                    sigar_net_interface_config_t *ifconfig)
 {
@@ -1681,37 +1715,7 @@ int sigar_net_interface_config_get(sigar_t *sigar, const char *name,
     }
     
     if (!ioctl(sock, SIOCGIFFLAGS, &ifr)) {
-        sigar_uint64_t flags = ifr.ifr_flags;
-#ifdef __linux__
-# ifndef IFF_DYNAMIC
-#  define IFF_DYNAMIC 0x8000 /* not in 2.2 kernel */
-# endif /* IFF_DYNAMIC */
-        int is_mcast = flags & IFF_MULTICAST;
-        int is_slave = flags & IFF_SLAVE;
-        int is_master = flags & IFF_MASTER;
-        int is_dynamic = flags & IFF_DYNAMIC;
-        /*
-         * XXX: should just define SIGAR_IFF_*
-         * and test IFF_* bits on given platform.
-         * this is the only diff between solaris/hpux/linux
-         * for the flags we care about.
-         *
-         */
-        flags &= ~(IFF_MULTICAST|IFF_SLAVE|IFF_MASTER);
-        if (is_mcast) {
-            flags |= SIGAR_IFF_MULTICAST;
-        }
-        if (is_slave) {
-            flags |= SIGAR_IFF_SLAVE;
-        }
-        if (is_master) {
-            flags |= SIGAR_IFF_MASTER;
-        }
-        if (is_dynamic) {
-            flags |= SIGAR_IFF_DYNAMIC;
-        }
-#endif
-        ifconfig->flags = flags;
+        ifconfig->flags = sigar_ifflags_get(ifr.ifr_flags);
     }
     else {
         /* should always be able to get flags for existing device */
@@ -2045,6 +2049,7 @@ sigar_net_interface_address_list_get(sigar_t *sigar,
         ifaddr = &ifaddrs->data[ifaddrs->number++];
 
         SIGAR_SSTRCPY(ifaddr->ifname, ifa->ifa_name);
+        ifaddr->flags = sigar_ifflags_get(ifa->ifa_flags);
 
         if (family == AF_INET) {
             sigar_net_address_set(ifaddr->address, SIGAR_SIN_S_ADDR(sa));
