@@ -921,6 +921,38 @@ JNIEXPORT jobjectArray SIGAR_JNIx(getNetConnectionList)
     return connarray;
 }
 
+JNIEXPORT jobjectArray SIGAR_JNIx(getNetInterfaceAddressList)
+(JNIEnv *env, jobject sigar_obj)
+{
+    int status;
+    unsigned int i;
+    jarray ifaddrarray;
+    jclass cls = SIGAR_FIND_CLASS("NetInterfaceAddress");
+    sigar_net_interface_address_list_t ifaddrs;
+    dSIGAR(NULL);
+
+    status = sigar_net_interface_address_list_get(sigar, &ifaddrs);
+
+    if (status != SIGAR_OK) {
+        sigar_throw_error(env, jsigar, status);
+        return NULL;
+    }
+
+    JAVA_SIGAR_INIT_FIELDS_NETINTERFACEADDRESS(cls);
+
+    ifaddrarray = JENV->NewObjectArray(env, ifaddrs.number, cls, 0);
+
+    for (i=0; i<ifaddrs.number; i++) {
+        jobject obj = JENV->AllocObject(env, cls);
+        JAVA_SIGAR_SET_FIELDS_NETINTERFACEADDRESS(cls, obj, ifaddrs.data[i]);
+        JENV->SetObjectArrayElement(env, ifaddrarray, i, obj);
+    }
+
+    sigar_net_interface_address_list_destroy(sigar, &ifaddrs);
+
+    return ifaddrarray;
+}
+
 static int jbyteArray_to_sigar_net_address(JNIEnv *env, jbyteArray jaddress,
                                            sigar_net_address_t *address)
 {
