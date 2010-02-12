@@ -2044,6 +2044,8 @@ sigar_net_interface_address_list_get(sigar_t *sigar,
         SIGAR_NET_IFADDRS_GROW(ifaddrs);
         ifaddr = &ifaddrs->data[ifaddrs->number++];
 
+        SIGAR_SSTRCPY(ifaddr->ifname, ifa->ifa_name);
+
         if (family == AF_INET) {
             sigar_net_address_set(ifaddr->address, SIGAR_SIN_S_ADDR(sa));
             sigar_net_address_set(ifaddr->netmask, SIGAR_SIN_S_ADDR(ifa->ifa_netmask));
