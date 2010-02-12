@@ -24,6 +24,7 @@ import java.net.Inet6Address;
 import org.hyperic.sigar.Sigar;
 import org.hyperic.sigar.SigarException;
 import org.hyperic.sigar.SigarNotImplementedException;
+import org.hyperic.sigar.NetInterfaceAddress;
 import org.hyperic.sigar.NetInterfaceConfig;
 import org.hyperic.sigar.NetInterfaceStat;
 import org.hyperic.sigar.NetFlags;
@@ -111,5 +112,30 @@ public class TestNetIf extends SigarTestCase {
                 sigar.getNetInterfaceConfig().getAddress());
 
         getGarbage(sigar);
+    }
+
+    public void testNetInterfaceAddressList() throws Exception {
+        Sigar sigar = getSigar();
+        NetInterfaceAddress[] ifaddrs;
+        try {
+            ifaddrs = sigar.getNetInterfaceAddressList();
+        } catch (SigarNotImplementedException e) {
+            return;
+        }
+
+        for (int i=0; i<ifaddrs.length; i++) {
+            NetInterfaceAddress ifaddr = ifaddrs[i];
+            long flags = ifaddr.getFlags();
+            assertLengthTrace("Ifname", ifaddr.getIfname());
+            assertLengthTrace("Flags", NetFlags.getIfFlagsString(flags));
+            assertTrueTrace("Address", ifaddr.getAddress());
+            assertTrueTrace("Netmask", ifaddr.getNetmask());
+            if ((flags & NetFlags.IFF_BROADCAST) > 0) {
+                assertTrueTrace("Broadcast", ifaddr.getBroadcast());
+            }
+            else if ((flags & NetFlags.IFF_POINTOPOINT) > 0) {
+                assertTrueTrace("Destination", ifaddr.getDestination());
+            }
+        }
     }
 }
