@@ -946,6 +946,12 @@ int sigar_net_interface_ipv6_config_get(sigar_t *sigar, const char *name,
     return SIGAR_OK;
 }
 
+int sigar_net_interface_address_list_get(sigar_t *sigar,
+                                         sigar_net_interface_address_list_t *ifaddrs)
+{
+    return SIGAR_ENOTIMPL;
+}
+
 static int net_conn_get_udp_listen(sigar_net_connection_walker_t *walker)
 {
     sigar_t *sigar = walker->sigar;

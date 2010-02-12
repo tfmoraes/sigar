@@ -2127,6 +2127,12 @@ int sigar_net_interface_ipv6_config_get(sigar_t *sigar, const char *name,
     return SIGAR_OK;
 }
 
+int sigar_net_interface_address_list_get(sigar_t *sigar,
+                                         sigar_net_interface_address_list_t *ifaddrs)
+{
+    return SIGAR_ENOTIMPL;
+}
+
 #define TCPQ_SIZE(s) ((s) >= 0 ? (s) : 0)
 
 static int tcp_connection_get(sigar_net_connection_walker_t *walker,

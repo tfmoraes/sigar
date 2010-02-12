@@ -1653,6 +1653,12 @@ int sigar_net_interface_ipv6_config_get(sigar_t *sigar, const char *name,
     return SIGAR_OK;
 }
 
+int sigar_net_interface_address_list_get(sigar_t *sigar,
+                                         sigar_net_interface_address_list_t *ifaddrs)
+{
+    return SIGAR_ENOTIMPL;
+}
+
 #define IS_TCP_SERVER(state, flags) \
     ((flags & SIGAR_NETCONN_SERVER) && (state == TCPS_LISTEN))
 

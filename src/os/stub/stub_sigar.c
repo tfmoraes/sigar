@@ -232,6 +232,12 @@ int sigar_net_route_list_get(sigar_t *sigar,
     return SIGAR_ENOTIMPL;
 }
 
+int sigar_net_interface_address_list_get(sigar_t *sigar,
+                                         sigar_net_interface_address_list_t *ifaddrs)
+{
+    return SIGAR_ENOTIMPL;
+}
+
 int sigar_net_interface_stat_get(sigar_t *sigar, const char *name,
                                  sigar_net_interface_stat_t *ifstat)
 {
