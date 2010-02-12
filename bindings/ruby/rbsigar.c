@@ -369,6 +369,32 @@ static VALUE rb_sigar_net_connection_list(VALUE obj, VALUE flags)
     return RETVAL;
 }
 
+static VALUE rb_cSigarNetInterfaceAddress;
+
+static VALUE rb_sigar_net_interface_address_list(VALUE obj)
+{
+    SIGAR_GET;
+
+    int status;
+    sigar_net_interface_address_list_t ifaddrs;
+    VALUE RETVAL;
+
+    status = sigar_net_interface_address_list_get(sigar, &ifaddrs);
+
+    if (status != SIGAR_OK) {
+        RB_SIGAR_CROAK;
+    }
+
+    RETVAL = rb_sigar_new_list((char *)&ifaddrs.data[0],
+                               ifaddrs.number,
+                               sizeof(*ifaddrs.data),
+                               rb_cSigarNetInterfaceAddress);
+
+    sigar_net_interface_address_list_destroy(sigar, &ifaddrs);
+
+    return RETVAL;
+}
+
 static VALUE rb_sigar_net_services_name(VALUE obj, VALUE protocol, VALUE port)
 {
     SIGAR_GET;
@@ -855,6 +881,7 @@ void Init_sigar(void)
     rb_define_method(rclass, "loadavg", rb_sigar_loadavg, 0);
     rb_define_method(rclass, "file_system_list", rb_sigar_file_system_list, 0);
     rb_define_method(rclass, "net_connection_list", rb_sigar_net_connection_list, 1);
+    rb_define_method(rclass, "net_interface_address_list", rb_sigar_net_interface_address_list, 0);
     rb_define_method(rclass, "net_interface_list", rb_sigar_net_interface_list, 0);
     rb_define_method(rclass, "net_services_name", rb_sigar_net_services_name, 2);
     rb_define_method(rclass, "net_stat", rb_sigar_net_stat, 1);
