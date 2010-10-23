@@ -1,14 +1,15 @@
 Source: sigar
 Priority: extra
 Maintainer: Thiago Franco de Moraes <tfmoraes@cti.gov.br>
-Build-Depends: debhelper (>= 7.0.50~), cmake, python-all-dev, quilt, ruby-dev, rake, nant
+Uploaders: Michael Hanke <michael.hanke@gmail.com>
+Build-Depends: debhelper (>= 7.0.50~), cmake, python-all-dev, quilt, ruby-dev, rake, nant, ant
 Build-Depends-Indep: cli-common-dev (>= 0.5.7)
-Standards-Version: 3.8.4
+Standards-Version: 3.9.1
 Section: libs
 Homepage: http://support.hyperic.com/display/SIGAR/Home
 
+
 Package: libsigar
-Section: lib
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: portable interface for gathering system information
@@ -24,6 +25,7 @@ Description: portable interface for gathering system information
   * Network route table
  .
  This package provides the C library.
+
 
 Package: libsigar-dev
 Section: libdevel
@@ -82,6 +84,7 @@ Description: portable interface for gathering system information
  .
  This package provides the Ruby bindings.
 
+
 Package: libsigar-perl
 Section: perl
 Architecture: any
@@ -118,6 +121,7 @@ Description: portable interface for gathering system information
   * Network route table
  .
  This package provides the Perl bindings.
+
 
 Package: libsigar-java
 Section: java
