@@ -1,5 +1,11 @@
+sigar (1.7.0~git20110317-1) natty; urgency=low
+
+  * Fixes in package (Closes: #575873).
+
+ -- Thiago Franco de Moraes <tfmoraes@cti.gov.br>  Thu, 17 Mar 2011 15:24:46 -0300
+
 sigar (1.7.0~git20100907-1) unstable; urgency=low
 
-  * Initial release (Closes: #575873).
+  * Initial release
 
  -- Thiago Franco de Moraes <tfmoraes@cti.gov.br>  Wed, 15 Sep 2010 09:00:46 -0300
